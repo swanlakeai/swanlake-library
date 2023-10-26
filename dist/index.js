@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.bufferToUuid = exports.uuidToBuffer = exports.OptionalJwtAuthGuard = exports.JwtStrategy = exports.JwtAuthGuard = exports.AuthModule = exports.topLevelLinks = exports.prepareData = exports.SwanlakePrisma = exports.DEFAULT_PAGINATION_COUNT = exports.JsonApiNavigator = exports.Imgix = void 0;
+exports.bufferToUuid = exports.uuidToBuffer = exports.JsonApiBuilder = exports.OptionalJwtAuthGuard = exports.JwtStrategy = exports.JwtAuthGuard = exports.AuthModule = exports.topLevelLinks = exports.prepareData = exports.SwanlakePrisma = exports.DEFAULT_PAGINATION_COUNT = exports.JsonApiNavigator = exports.Imgix = void 0;
 var Imgix_1 = require("./imgix/Imgix");
 Object.defineProperty(exports, "Imgix", { enumerable: true, get: function () { return Imgix_1.Imgix; } });
 var JsonApiNavigator_1 = require("./jsonApi/JsonApiNavigator");
@@ -18,6 +18,8 @@ var jwt_strategy_1 = require("./auth/jwt.strategy");
 Object.defineProperty(exports, "JwtStrategy", { enumerable: true, get: function () { return jwt_strategy_1.JwtStrategy; } });
 var optional_jwt_auth_guard_1 = require("./auth/optional-jwt-auth.guard");
 Object.defineProperty(exports, "OptionalJwtAuthGuard", { enumerable: true, get: function () { return optional_jwt_auth_guard_1.OptionalJwtAuthGuard; } });
+var JsonApiBuilder_1 = require("./jsonApi/JsonApiBuilder");
+Object.defineProperty(exports, "JsonApiBuilder", { enumerable: true, get: function () { return JsonApiBuilder_1.JsonApiBuilder; } });
 function uuidToBuffer(uuid) {
     const hex = uuid.replace(/-/g, "");
     return Buffer.from(hex, "hex");
