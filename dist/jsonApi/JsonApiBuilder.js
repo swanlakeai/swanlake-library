@@ -44,12 +44,22 @@ class JsonApiBuilder {
         }
         serialisedData.attributes = {};
         Object.keys(builder.attributes).forEach((attribute) => {
-            serialisedData.attributes[attribute] = data[attribute];
+            if (typeof serialisedData.attributes[attribute] === "function") {
+                serialisedData.attributes[attribute] = serialisedData.attributes[attribute](data);
+            }
+            else {
+                serialisedData.attributes[attribute] = data[attribute];
+            }
         });
         if (builder.meta) {
             serialisedData.meta = {};
             Object.keys(builder.meta).forEach((meta) => {
-                serialisedData.meta[meta] = data[meta];
+                if (typeof serialisedData.meta[meta] === "function") {
+                    serialisedData.meta[meta] = serialisedData.meta[meta](data);
+                }
+                else {
+                    serialisedData.meta[meta] = data[meta];
+                }
             });
         }
         if (builder.relationships) {
