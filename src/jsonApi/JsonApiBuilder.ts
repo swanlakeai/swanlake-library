@@ -58,8 +58,8 @@ export class JsonApiBuilder {
 		serialisedData.attributes = {};
 
 		Object.keys(builder.attributes).forEach((attribute) => {
-			if (typeof serialisedData.attributes[attribute] === "function") {
-				serialisedData.attributes[attribute] = serialisedData.attributes[attribute](data);
+			if (typeof builder.attributes[attribute] === "function") {
+				serialisedData.attributes[attribute] = builder.attributes[attribute](data);
 			} else {
 				serialisedData.attributes[attribute] = data[attribute];
 			}
@@ -68,8 +68,8 @@ export class JsonApiBuilder {
 		if (builder.meta) {
 			serialisedData.meta = {};
 			Object.keys(builder.meta).forEach((meta) => {
-				if (typeof serialisedData.meta[meta] === "function") {
-					serialisedData.meta[meta] = serialisedData.meta[meta](data);
+				if (typeof builder.meta[meta] === "function") {
+					serialisedData.meta[meta] = builder.meta[meta](data);
 				} else {
 					serialisedData.meta[meta] = data[meta];
 				}
