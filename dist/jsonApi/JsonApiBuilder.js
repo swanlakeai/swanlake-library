@@ -8,6 +8,7 @@ class JsonApiBuilder {
         this._configureRelationships = _configureRelationships;
         this._paginationCount = 25;
         this._pagination = {};
+        this._url = process?.env?.URL ?? "";
         if (query?.["page[size]"])
             this._pagination.size = +query["page[size]"];
         if (query?.["page[before]"])
@@ -55,7 +56,7 @@ class JsonApiBuilder {
         this._configureRelationships();
         const response = {
             links: {
-                self: (process?.env?.URL ?? "") + url,
+                self: this._url + url,
             },
             data: undefined,
         };
@@ -71,10 +72,14 @@ class JsonApiBuilder {
                         this._pagination.size = this._paginationCount;
                     if (data.length === (this._pagination?.size ? this._pagination.size + 1 : this._paginationCount + 1)) {
                         response.links.self =
-                            url + (url.indexOf("?") === -1 ? "?" : "&") + `page[size]=${this._pagination.size.toString()}`;
+                            this._url +
+                                url +
+                                (url.indexOf("?") === -1 ? "?" : "&") +
+                                `page[size]=${this._pagination.size.toString()}`;
                         if (this._pagination.after) {
                             response.links.next =
-                                url +
+                                this._url +
+                                    url +
                                     (url.indexOf("?") === -1 ? "?" : "&") +
                                     `page[size]=${this._pagination.size.toString()}&page[after]=${this._pagination.after}`;
                         }
@@ -82,7 +87,8 @@ class JsonApiBuilder {
                     }
                     if (this._pagination.before) {
                         response.links.prev =
-                            url +
+                            this._url +
+                                url +
                                 (url.indexOf("?") === -1 ? "?" : "&") +
                                 `page[size]=${this._pagination.size.toString()}&page[before]=${this._pagination.before}`;
                     }

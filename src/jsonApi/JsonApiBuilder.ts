@@ -20,11 +20,13 @@ export interface JsonApiCursorInterface {
 export class JsonApiBuilder {
 	private _paginationCount = 25;
 	private _pagination: JsonApiPaginationInterface = {};
+	private _url: string;
 
 	constructor(
 		private _configureRelationships: configureRelationshipsFunction,
 		query?: any
 	) {
+		this._url = process?.env?.URL ?? "";
 		if (query?.["page[size]"]) this._pagination.size = +query["page[size]"];
 		if (query?.["page[before]"]) this._pagination.before = query["page[before]"];
 		if (query?.["page[after]"]) this._pagination.after = query["page[after]"];
@@ -77,7 +79,7 @@ export class JsonApiBuilder {
 
 		const response: any = {
 			links: {
-				self: (process?.env?.URL ?? "") + url,
+				self: this._url + url,
 			},
 			data: undefined,
 		};
@@ -96,10 +98,14 @@ export class JsonApiBuilder {
 
 					if (data.length === (this._pagination?.size ? this._pagination.size + 1 : this._paginationCount + 1)) {
 						response.links.self =
-							url + (url.indexOf("?") === -1 ? "?" : "&") + `page[size]=${this._pagination.size.toString()}`;
+							this._url +
+							url +
+							(url.indexOf("?") === -1 ? "?" : "&") +
+							`page[size]=${this._pagination.size.toString()}`;
 
 						if (this._pagination.after) {
 							response.links.next =
+								this._url +
 								url +
 								(url.indexOf("?") === -1 ? "?" : "&") +
 								`page[size]=${this._pagination.size.toString()}&page[after]=${this._pagination.after}`;
@@ -110,6 +116,7 @@ export class JsonApiBuilder {
 
 					if (this._pagination.before) {
 						response.links.prev =
+							this._url +
 							url +
 							(url.indexOf("?") === -1 ? "?" : "&") +
 							`page[size]=${this._pagination.size.toString()}&page[before]=${this._pagination.before}`;
