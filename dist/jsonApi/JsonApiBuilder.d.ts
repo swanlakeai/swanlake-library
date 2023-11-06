@@ -10,6 +10,10 @@ export interface JsonApiCursorInterface {
     cursor?: string;
     take?: number;
 }
+export interface JsonApiRelationshipBuilderInterface {
+    type: string;
+    id: string;
+}
 export declare class JsonApiBuilder {
     private _configureRelationships;
     private _paginationCount;

@@ -1,9 +1,7 @@
 require("dotenv").config();
 
 import { bufferToUuid } from "../index";
-import { JsonApiRelationshipBuilder } from "./JsonApiRelationshipBuilder";
 import { JsonApiDataInterface } from "./interfaces/JsonApiDataInterface";
-import { JsonApiRelationshipBuilderInterface } from "./interfaces/JsonApiRelationshipBuilderInterface";
 
 export type configureRelationshipsFunction = () => void;
 
@@ -17,6 +15,11 @@ export interface JsonApiPaginationInterface {
 export interface JsonApiCursorInterface {
 	cursor?: string;
 	take?: number;
+}
+
+export interface JsonApiRelationshipBuilderInterface {
+	type: string;
+	id: string;
 }
 
 export class JsonApiBuilder {
@@ -230,7 +233,7 @@ export class JsonApiBuilder {
 		};
 	}
 
-	private serialiseRelationship<T, R extends JsonApiDataInterface | JsonApiRelationshipBuilderInterface>(
+	private serialiseRelationship<T, R extends JsonApiDataInterface>(
 		data: T | T[],
 		builder: R
 	): {
@@ -245,17 +248,7 @@ export class JsonApiBuilder {
 		};
 
 		if (Array.isArray(data)) {
-			let serialisedResults;
-			if (builder instanceof JsonApiRelationshipBuilder) {
-				serialisedResults = data.map((item: T) => {
-					return {
-						type: builder.type,
-						id: bufferToUuid(item[builder.id]),
-					};
-				});
-			} else {
-				serialisedResults = data.map((item: T) => this.serialiseData(item, builder as JsonApiDataInterface));
-			}
+			const serialisedResults = data.map((item: T) => this.serialiseData(item, builder));
 			const serialisedData = serialisedResults.map((result) => result.serialisedData);
 			const includedElements = ([] as any[]).concat(...serialisedResults.map((result) => result.includedElements));
 
@@ -265,27 +258,20 @@ export class JsonApiBuilder {
 
 			response.additionalIncludeds = ([] as any[]).concat(...includedElements).concat(serialisedData);
 		} else {
-			if (builder instanceof JsonApiRelationshipBuilder) {
-				response.minimalData = {
-					type: builder.type,
-					id: bufferToUuid(data[builder.id]),
+			const { serialisedData, includedElements } = this.serialiseData(data, builder);
+
+			response.minimalData = {
+				type: serialisedData.type,
+				id: serialisedData.id,
+			};
+
+			if (serialisedData.links) {
+				response.relationshipLink = {
+					self: serialisedData.links.self,
 				};
-			} else {
-				const { serialisedData, includedElements } = this.serialiseData(data, builder as JsonApiDataInterface);
-
-				response.minimalData = {
-					type: serialisedData.type,
-					id: serialisedData.id,
-				};
-
-				if (serialisedData.links) {
-					response.relationshipLink = {
-						self: serialisedData.links.self,
-					};
-				}
-
-				response.additionalIncludeds = [...includedElements, serialisedData];
 			}
+
+			response.additionalIncludeds = [...includedElements, serialisedData];
 		}
 
 		return response;
