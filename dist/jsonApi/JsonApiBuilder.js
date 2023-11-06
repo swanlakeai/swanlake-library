@@ -146,22 +146,44 @@ class JsonApiBuilder {
         if (builder.relationships) {
             serialisedData.relationships = {};
             Object.entries(builder.relationships).forEach((relationship) => {
-                if (data[relationship[0]]) {
-                    const { minimalData, relationshipLink, additionalIncludeds } = this.serialiseRelationship(data[relationship[0]], relationship[1].data);
-                    const resourceLinkage = {
-                        data: minimalData,
-                    };
-                    if (relationshipLink) {
-                        resourceLinkage.links = relationshipLink;
-                    }
-                    else if (relationship[1].links) {
-                        resourceLinkage.links = {
-                            related: relationship[1].links.related(data),
+                let resourceLinkage = {};
+                if (relationship[1].resourceIdentifier || data[relationship[0]]) {
+                    if (relationship[1].resourceIdentifier) {
+                        const data = {
+                            type: relationship[1].resourceIdentifier.type,
                         };
+                        if (typeof relationship[1].resourceIdentifier.id === "function") {
+                            data.id = relationship[1].resourceIdentifier.id(data);
+                        }
+                        else {
+                            data.id = data[relationship[1].resourceIdentifier.id];
+                        }
+                        resourceLinkage = {
+                            data: data,
+                        };
+                        if (relationship[1].links) {
+                            resourceLinkage.links = {
+                                related: relationship[1].links.related(data),
+                            };
+                        }
+                    }
+                    else if (data[relationship[0]]) {
+                        const { minimalData, relationshipLink, additionalIncludeds } = this.serialiseRelationship(data[relationship[0]], relationship[1].data);
+                        resourceLinkage = {
+                            data: minimalData,
+                        };
+                        if (relationshipLink) {
+                            resourceLinkage.links = relationshipLink;
+                        }
+                        else if (relationship[1].links) {
+                            resourceLinkage.links = {
+                                related: relationship[1].links.related(data),
+                            };
+                        }
+                        if (relationship[1].included && additionalIncludeds.length > 0)
+                            includedElements.push(...additionalIncludeds);
                     }
                     serialisedData.relationships[relationship[1].name ?? relationship[0]] = resourceLinkage;
-                    if (relationship[1].included && additionalIncludeds.length > 0)
-                        includedElements.push(...additionalIncludeds);
                 }
             });
             if (Object.keys(serialisedData.relationships).length === 0)

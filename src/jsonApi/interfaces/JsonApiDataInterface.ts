@@ -14,8 +14,9 @@ export interface JsonApiDataInterface {
 	};
 	relationships?: {
 		[key: string]: {
-			data: JsonApiDataInterface;
-			included: boolean;
+			resourceIdentifier?: { type: string; id: string | transformFunction<any> };
+			data?: JsonApiDataInterface;
+			included?: boolean;
 			name?: string;
 			links?: {
 				related?: transformFunction<any>;
