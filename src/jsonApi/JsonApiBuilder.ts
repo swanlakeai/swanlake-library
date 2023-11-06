@@ -15,14 +15,14 @@ export interface JsonApiCursorInterface {
 	take?: number;
 }
 
-export declare const DEFAULT_PAGINATION_COUNT = 25;
 export class JsonApiBuilder {
+	private _paginationCount = 25;
 	constructor(private _configureRelationships: configureRelationshipsFunction) {}
 
 	generateCursor(pagination?: JsonApiPaginationInterface): JsonApiCursorInterface {
 		const cursor: JsonApiCursorInterface = {
 			cursor: undefined,
-			take: DEFAULT_PAGINATION_COUNT + 1,
+			take: this._paginationCount + 1,
 		};
 
 		if (!pagination) return cursor;
@@ -33,10 +33,10 @@ export class JsonApiBuilder {
 
 		if (pagination.before) {
 			cursor.cursor = pagination.before;
-			cursor.take = -((pagination.size ?? DEFAULT_PAGINATION_COUNT) + 1);
+			cursor.take = -((pagination.size ?? this._paginationCount) + 1);
 		} else if (pagination.after) {
 			cursor.cursor = pagination.after;
-			cursor.take = (pagination.size ?? DEFAULT_PAGINATION_COUNT) + 1;
+			cursor.take = (pagination.size ?? this._paginationCount) + 1;
 		}
 
 		return cursor;
@@ -48,7 +48,7 @@ export class JsonApiBuilder {
 		idName?: string
 	): JsonApiPaginationInterface {
 		if (!pagination.idName) pagination.idName = idName ?? "id";
-		const hasEnoughData = data.length === (pagination?.size ? pagination.size + 1 : DEFAULT_PAGINATION_COUNT + 1);
+		const hasEnoughData = data.length === (pagination?.size ? pagination.size + 1 : this._paginationCount + 1);
 		if (!pagination.before && !pagination.after && hasEnoughData) {
 			pagination.after = bufferToUuid(data[data.length - 1][pagination.idName]);
 			pagination.before = bufferToUuid(data[data.length - 1][pagination.idName]);
@@ -88,15 +88,15 @@ export class JsonApiBuilder {
 		if (url) {
 			if (Array.isArray(data) && !pagination)
 				pagination = {
-					size: DEFAULT_PAGINATION_COUNT,
+					size: this._paginationCount,
 				};
 
 			if (pagination && Array.isArray(data)) {
 				pagination = this.updatePagination(pagination, data, idName);
 
-				if (!pagination.size) pagination.size = DEFAULT_PAGINATION_COUNT;
+				if (!pagination.size) pagination.size = this._paginationCount;
 
-				if (data.length === (pagination?.size ?? DEFAULT_PAGINATION_COUNT + 1)) {
+				if (data.length === (pagination?.size ?? this._paginationCount + 1)) {
 					response.links.self =
 						url + (url.indexOf("?") === -1 ? "?" : "&") + `page[size]=${pagination.size.toString()}`;
 

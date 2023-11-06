@@ -5,11 +5,12 @@ const index_1 = require("../index");
 class JsonApiBuilder {
     constructor(_configureRelationships) {
         this._configureRelationships = _configureRelationships;
+        this._paginationCount = 25;
     }
     generateCursor(pagination) {
         const cursor = {
             cursor: undefined,
-            take: exports.DEFAULT_PAGINATION_COUNT + 1,
+            take: this._paginationCount + 1,
         };
         if (!pagination)
             return cursor;
@@ -18,18 +19,18 @@ class JsonApiBuilder {
         }
         if (pagination.before) {
             cursor.cursor = pagination.before;
-            cursor.take = -((pagination.size ?? exports.DEFAULT_PAGINATION_COUNT) + 1);
+            cursor.take = -((pagination.size ?? this._paginationCount) + 1);
         }
         else if (pagination.after) {
             cursor.cursor = pagination.after;
-            cursor.take = (pagination.size ?? exports.DEFAULT_PAGINATION_COUNT) + 1;
+            cursor.take = (pagination.size ?? this._paginationCount) + 1;
         }
         return cursor;
     }
     updatePagination(pagination, data, idName) {
         if (!pagination.idName)
             pagination.idName = idName ?? "id";
-        const hasEnoughData = data.length === (pagination?.size ? pagination.size + 1 : exports.DEFAULT_PAGINATION_COUNT + 1);
+        const hasEnoughData = data.length === (pagination?.size ? pagination.size + 1 : this._paginationCount + 1);
         if (!pagination.before && !pagination.after && hasEnoughData) {
             pagination.after = (0, index_1.bufferToUuid)(data[data.length - 1][pagination.idName]);
             pagination.before = (0, index_1.bufferToUuid)(data[data.length - 1][pagination.idName]);
@@ -57,13 +58,13 @@ class JsonApiBuilder {
         if (url) {
             if (Array.isArray(data) && !pagination)
                 pagination = {
-                    size: exports.DEFAULT_PAGINATION_COUNT,
+                    size: this._paginationCount,
                 };
             if (pagination && Array.isArray(data)) {
                 pagination = this.updatePagination(pagination, data, idName);
                 if (!pagination.size)
-                    pagination.size = exports.DEFAULT_PAGINATION_COUNT;
-                if (data.length === (pagination?.size ?? exports.DEFAULT_PAGINATION_COUNT + 1)) {
+                    pagination.size = this._paginationCount;
+                if (data.length === (pagination?.size ?? this._paginationCount + 1)) {
                     response.links.self =
                         url + (url.indexOf("?") === -1 ? "?" : "&") + `page[size]=${pagination.size.toString()}`;
                     if (pagination.after) {

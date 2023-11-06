@@ -10,9 +10,9 @@ export interface JsonApiCursorInterface {
     cursor?: string;
     take?: number;
 }
-export declare const DEFAULT_PAGINATION_COUNT = 25;
 export declare class JsonApiBuilder {
     private _configureRelationships;
+    private _paginationCount;
     constructor(_configureRelationships: configureRelationshipsFunction);
     generateCursor(pagination?: JsonApiPaginationInterface): JsonApiCursorInterface;
     private updatePagination;
