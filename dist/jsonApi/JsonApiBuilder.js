@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.JsonApiBuilder = void 0;
+require("dotenv").config();
 const index_1 = require("../index");
 class JsonApiBuilder {
     constructor(_configureRelationships, query) {
@@ -58,36 +59,38 @@ class JsonApiBuilder {
             },
             data: undefined,
         };
-        if (url) {
-            if (Array.isArray(data) && !this._pagination)
-                this._pagination = {
-                    size: this._paginationCount,
-                };
-            if (this._pagination && Array.isArray(data)) {
-                this.updatePagination(data, idName);
-                if (!this._pagination.size)
-                    this._pagination.size = this._paginationCount;
-                if (data.length === (this._pagination?.size ?? this._paginationCount + 1)) {
-                    response.links.self =
-                        url + (url.indexOf("?") === -1 ? "?" : "&") + `page[size]=${this._pagination.size.toString()}`;
-                    if (this._pagination.after) {
-                        response.links.next =
+        if (Array.isArray(data) && data.length <= this._paginationCount + 1) {
+            if (url) {
+                if (Array.isArray(data) && !this._pagination)
+                    this._pagination = {
+                        size: this._paginationCount,
+                    };
+                if (this._pagination && Array.isArray(data)) {
+                    this.updatePagination(data, idName);
+                    if (!this._pagination.size)
+                        this._pagination.size = this._paginationCount;
+                    if (data.length === (this._pagination?.size ?? this._paginationCount + 1)) {
+                        response.links.self =
+                            url + (url.indexOf("?") === -1 ? "?" : "&") + `page[size]=${this._pagination.size.toString()}`;
+                        if (this._pagination.after) {
+                            response.links.next =
+                                url +
+                                    (url.indexOf("?") === -1 ? "?" : "&") +
+                                    `page[size]=${this._pagination.size.toString()}&page[after]=${this._pagination.after}`;
+                        }
+                        data.splice(this._pagination.size, 1);
+                    }
+                    if (this._pagination.before) {
+                        response.links.prev =
                             url +
                                 (url.indexOf("?") === -1 ? "?" : "&") +
-                                `page[size]=${this._pagination.size.toString()}&page[after]=${this._pagination.after}`;
+                                `page[size]=${this._pagination.size.toString()}&page[before]=${this._pagination.before}`;
                     }
-                    data.splice(this._pagination.size, 1);
-                }
-                if (this._pagination.before) {
-                    response.links.prev =
-                        url +
-                            (url.indexOf("?") === -1 ? "?" : "&") +
-                            `page[size]=${this._pagination.size.toString()}&page[before]=${this._pagination.before}`;
                 }
             }
-        }
-        else {
-            delete response.links;
+            else {
+                delete response.links;
+            }
         }
         let included = [];
         if (Array.isArray(data)) {

@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 import { bufferToUuid } from "../index";
 import { JsonApiDataInterface } from "./interfaces/JsonApiDataInterface";
 
@@ -80,40 +82,42 @@ export class JsonApiBuilder {
 			data: undefined,
 		};
 
-		if (url) {
-			if (Array.isArray(data) && !this._pagination)
-				this._pagination = {
-					size: this._paginationCount,
-				};
+		if (Array.isArray(data) && data.length <= this._paginationCount + 1) {
+			if (url) {
+				if (Array.isArray(data) && !this._pagination)
+					this._pagination = {
+						size: this._paginationCount,
+					};
 
-			if (this._pagination && Array.isArray(data)) {
-				this.updatePagination(data, idName);
+				if (this._pagination && Array.isArray(data)) {
+					this.updatePagination(data, idName);
 
-				if (!this._pagination.size) this._pagination.size = this._paginationCount;
+					if (!this._pagination.size) this._pagination.size = this._paginationCount;
 
-				if (data.length === (this._pagination?.size ?? this._paginationCount + 1)) {
-					response.links.self =
-						url + (url.indexOf("?") === -1 ? "?" : "&") + `page[size]=${this._pagination.size.toString()}`;
+					if (data.length === (this._pagination?.size ?? this._paginationCount + 1)) {
+						response.links.self =
+							url + (url.indexOf("?") === -1 ? "?" : "&") + `page[size]=${this._pagination.size.toString()}`;
 
-					if (this._pagination.after) {
-						response.links.next =
-							url +
-							(url.indexOf("?") === -1 ? "?" : "&") +
-							`page[size]=${this._pagination.size.toString()}&page[after]=${this._pagination.after}`;
+						if (this._pagination.after) {
+							response.links.next =
+								url +
+								(url.indexOf("?") === -1 ? "?" : "&") +
+								`page[size]=${this._pagination.size.toString()}&page[after]=${this._pagination.after}`;
+						}
+
+						data.splice(this._pagination.size, 1);
 					}
 
-					data.splice(this._pagination.size, 1);
+					if (this._pagination.before) {
+						response.links.prev =
+							url +
+							(url.indexOf("?") === -1 ? "?" : "&") +
+							`page[size]=${this._pagination.size.toString()}&page[before]=${this._pagination.before}`;
+					}
 				}
-
-				if (this._pagination.before) {
-					response.links.prev =
-						url +
-						(url.indexOf("?") === -1 ? "?" : "&") +
-						`page[size]=${this._pagination.size.toString()}&page[before]=${this._pagination.before}`;
-				}
+			} else {
+				delete response.links;
 			}
-		} else {
-			delete response.links;
 		}
 
 		let included: any[] = [];
