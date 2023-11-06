@@ -7,6 +7,16 @@ class JsonApiBuilder {
         this._configureRelationships = _configureRelationships;
         this._paginationCount = 25;
     }
+    generatePagination(query) {
+        const response = {};
+        if (query.page["size"])
+            response.size = query.page["size"];
+        if (query.page["before"])
+            response.before = query.page["before"];
+        if (query.page["after"])
+            response.after = query.page["after"];
+        return response;
+    }
     generateCursor(pagination) {
         const cursor = {
             cursor: undefined,
@@ -33,7 +43,6 @@ class JsonApiBuilder {
         const hasEnoughData = data.length === (pagination?.size ? pagination.size + 1 : this._paginationCount + 1);
         if (!pagination.before && !pagination.after && hasEnoughData) {
             pagination.after = (0, index_1.bufferToUuid)(data[data.length - 1][pagination.idName]);
-            pagination.before = (0, index_1.bufferToUuid)(data[data.length - 1][pagination.idName]);
             return pagination;
         }
         if (pagination.before) {
