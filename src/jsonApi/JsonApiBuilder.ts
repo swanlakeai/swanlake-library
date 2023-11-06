@@ -22,7 +22,7 @@ export class JsonApiBuilder {
 	generateCursor(pagination?: JsonApiPaginationInterface): JsonApiCursorInterface {
 		const cursor: JsonApiCursorInterface = {
 			cursor: undefined,
-			take: undefined,
+			take: DEFAULT_PAGINATION_COUNT + 1,
 		};
 
 		if (!pagination) return cursor;
@@ -79,13 +79,13 @@ export class JsonApiBuilder {
 		this._configureRelationships();
 
 		const response: any = {
+			links: {
+				self: (process?.env?.URL ?? "") + url,
+			},
 			data: undefined,
 		};
 
 		if (url) {
-			response.links = {};
-			response.links.self = (process?.env?.URL ?? "") + url;
-
 			if (pagination && Array.isArray(data)) {
 				pagination = this.updatePagination(pagination, data, idName);
 
@@ -112,6 +112,8 @@ export class JsonApiBuilder {
 					data.splice(pagination.size, 1);
 				}
 			}
+		} else {
+			delete response.links;
 		}
 
 		let included: any[] = [];
