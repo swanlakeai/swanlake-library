@@ -37,22 +37,22 @@ export class JsonApiBuilder {
 		if (query?.["page[after]"]) this._pagination.after = query["page[after]"];
 	}
 
+	private get size(): number {
+		return (this._pagination?.size ?? this._paginationCount) + 1;
+	}
+
 	generateCursor(): JsonApiCursorInterface {
 		const cursor: JsonApiCursorInterface = {
 			cursor: undefined,
-			take: this._paginationCount + 1,
+			take: this.size,
 		};
-
-		if (this._pagination.size) {
-			cursor.take = this._pagination.size;
-		}
 
 		if (this._pagination.before) {
 			cursor.cursor = this._pagination.before;
-			cursor.take = -((this._pagination.size ?? this._paginationCount) + 1);
+			cursor.take = -this.size;
 		} else if (this._pagination.after) {
 			cursor.cursor = this._pagination.after;
-			cursor.take = (this._pagination.size ?? this._paginationCount) + 1;
+			cursor.take = this.size;
 		}
 
 		return cursor;
@@ -60,8 +60,7 @@ export class JsonApiBuilder {
 
 	private updatePagination(data: any[], idName?: string): void {
 		if (!this._pagination.idName) this._pagination.idName = idName ?? "id";
-		const hasEnoughData =
-			data.length === (this._pagination?.size ? this._pagination.size + 1 : this._paginationCount + 1);
+		const hasEnoughData = data.length === this.size;
 		if (!this._pagination.before && !this._pagination.after && hasEnoughData) {
 			this._pagination.after = bufferToUuid(data[data.length - 1][this._pagination.idName]);
 
@@ -89,7 +88,7 @@ export class JsonApiBuilder {
 			data: undefined,
 		};
 
-		if (Array.isArray(data) && data.length <= this._paginationCount + 1) {
+		if (Array.isArray(data) && data.length <= this.size) {
 			if (url) {
 				if (Array.isArray(data) && !this._pagination)
 					this._pagination = {
@@ -101,7 +100,7 @@ export class JsonApiBuilder {
 
 					if (!this._pagination.size) this._pagination.size = this._paginationCount;
 
-					if (data.length === (this._pagination?.size ? this._pagination.size + 1 : this._paginationCount + 1)) {
+					if (data.length === this.size) {
 						response.links.self =
 							this._url +
 							url +
