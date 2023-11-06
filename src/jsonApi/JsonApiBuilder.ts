@@ -1,3 +1,4 @@
+import { bufferToUuid } from "src";
 import { JsonApiDataInterface } from "./interfaces/JsonApiDataInterface";
 
 export type configureRelationshipsFunction = () => void;
@@ -14,8 +15,7 @@ export interface JsonApiCursorInterface {
 	take?: number;
 }
 
-declare const DEFAULT_PAGINATION_COUNT = 25;
-
+export declare const DEFAULT_PAGINATION_COUNT = 25;
 export class JsonApiBuilder {
 	constructor(private _configureRelationships: configureRelationshipsFunction) {}
 
@@ -48,23 +48,23 @@ export class JsonApiBuilder {
 		idName?: string
 	): JsonApiPaginationInterface {
 		if (!pagination.idName) pagination.idName = idName ?? "id";
-		const hasEnoughData = data.length === (pagination?.size ?? DEFAULT_PAGINATION_COUNT + 1);
+		const hasEnoughData = data.length === (pagination?.size ? pagination.size + 1 : DEFAULT_PAGINATION_COUNT + 1);
 		if (!pagination.before && !pagination.after && hasEnoughData) {
-			pagination.after = data[data.length][pagination.idName];
-			pagination.before = data[data.length][pagination.idName];
+			pagination.after = bufferToUuid(data[data.length - 1][pagination.idName]);
+			pagination.before = bufferToUuid(data[data.length - 1][pagination.idName]);
 
 			return pagination;
 		}
 
 		if (pagination.before) {
 			pagination.after = pagination.before;
-			if (hasEnoughData) pagination.before = data[0][pagination.idName];
+			if (hasEnoughData) pagination.before = bufferToUuid(data[0][pagination.idName]);
 
 			return pagination;
 		}
 
 		pagination.before = pagination.after;
-		if (hasEnoughData) pagination.after = data[data.length][pagination.idName];
+		if (hasEnoughData) pagination.after = bufferToUuid(data[data.length - 1][pagination.idName]);
 
 		return pagination;
 	}
@@ -86,6 +86,11 @@ export class JsonApiBuilder {
 		};
 
 		if (url) {
+			if (Array.isArray(data) && !pagination)
+				pagination = {
+					size: DEFAULT_PAGINATION_COUNT,
+				};
+
 			if (pagination && Array.isArray(data)) {
 				pagination = this.updatePagination(pagination, data, idName);
 
