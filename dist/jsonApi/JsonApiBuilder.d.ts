@@ -18,7 +18,6 @@ export declare class JsonApiBuilder {
     private _configureRelationships;
     private _paginationCount;
     private _pagination;
-    private _url;
     constructor(_configureRelationships: configureRelationshipsFunction, query?: any);
     private get size();
     generateCursor(): JsonApiCursorInterface;

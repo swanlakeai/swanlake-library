@@ -1,5 +1,3 @@
-require("dotenv").config();
-
 import { bufferToUuid } from "../index";
 import { JsonApiDataInterface } from "./interfaces/JsonApiDataInterface";
 
@@ -25,13 +23,11 @@ export interface JsonApiRelationshipBuilderInterface {
 export class JsonApiBuilder {
 	private _paginationCount = 25;
 	private _pagination: JsonApiPaginationInterface = {};
-	private _url: string;
 
 	constructor(
 		private _configureRelationships: configureRelationshipsFunction,
 		query?: any
 	) {
-		this._url = process?.env?.URL ?? "";
 		if (query?.["page[size]"]) this._pagination.size = +query["page[size]"];
 		if (query?.["page[before]"]) this._pagination.before = query["page[before]"];
 		if (query?.["page[after]"]) this._pagination.after = query["page[after]"];
@@ -83,7 +79,7 @@ export class JsonApiBuilder {
 
 		const response: any = {
 			links: {
-				self: this._url + url,
+				self: url,
 			},
 			data: undefined,
 		};
@@ -102,14 +98,10 @@ export class JsonApiBuilder {
 
 					if (data.length === this.size) {
 						response.links.self =
-							this._url +
-							url +
-							(url.indexOf("?") === -1 ? "?" : "&") +
-							`page[size]=${this._pagination.size.toString()}`;
+							url + (url.indexOf("?") === -1 ? "?" : "&") + `page[size]=${this._pagination.size.toString()}`;
 
 						if (this._pagination.after) {
 							response.links.next =
-								this._url +
 								url +
 								(url.indexOf("?") === -1 ? "?" : "&") +
 								`page[size]=${this._pagination.size.toString()}&page[after]=${this._pagination.after}`;
@@ -120,7 +112,6 @@ export class JsonApiBuilder {
 
 					if (this._pagination.before) {
 						response.links.prev =
-							this._url +
 							url +
 							(url.indexOf("?") === -1 ? "?" : "&") +
 							`page[size]=${this._pagination.size.toString()}&page[before]=${this._pagination.before}`;
