@@ -69,7 +69,7 @@ class JsonApiBuilder {
                     this.updatePagination(data, idName);
                     if (!this._pagination.size)
                         this._pagination.size = this._paginationCount;
-                    if (data.length === (this._pagination?.size ?? this._paginationCount + 1)) {
+                    if (data.length === (this._pagination?.size ? this._pagination.size + 1 : this._paginationCount + 1)) {
                         response.links.self =
                             url + (url.indexOf("?") === -1 ? "?" : "&") + `page[size]=${this._pagination.size.toString()}`;
                         if (this._pagination.after) {
