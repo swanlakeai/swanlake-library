@@ -14,7 +14,9 @@ export { JwtAuthGuard } from "./auth/jwt-auth.guard";
 export { JwtStrategy } from "./auth/jwt.strategy";
 export { OptionalJwtAuthGuard } from "./auth/optional-jwt-auth.guard";
 export { JsonApiBuilder, configureRelationshipsFunction } from "./jsonApi/JsonApiBuilder";
+export { JsonApiRelationshipBuilder } from "./jsonApi/JsonApiRelationshipBuilder";
 export { JsonApiDataInterface, transformFunction } from "./jsonApi/interfaces/JsonApiDataInterface";
+export { JsonApiRelationshipBuilderInterface } from "./jsonApi/interfaces/JsonApiRelationshipBuilderInterface";
 
 export function uuidToBuffer(uuid: string): Buffer {
 	const hex = uuid.replace(/-/g, "");

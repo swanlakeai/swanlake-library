@@ -1,0 +1,1 @@
+{"version":3,"file":"JsonApiRelationshipBuilder.js","sourceRoot":"","sources":["../../src/jsonApi/JsonApiRelationshipBuilder.ts"],"names":[],"mappings":";;;AAEA,MAAa,0BAA0B;IAItC,YAAY,IAAY,EAAE,EAAU;QACnC,IAAI,CAAC,IAAI,GAAG,IAAI,CAAC;QACjB,IAAI,CAAC,EAAE,GAAG,EAAE,CAAC;IACd,CAAC;CACD;AARD,gEAQC"}

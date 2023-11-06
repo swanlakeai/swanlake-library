@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.JsonApiBuilder = void 0;
 require("dotenv").config();
 const index_1 = require("../index");
+const JsonApiRelationshipBuilder_1 = require("./JsonApiRelationshipBuilder");
 class JsonApiBuilder {
     constructor(_configureRelationships, query) {
         this._configureRelationships = _configureRelationships;
@@ -186,7 +187,18 @@ class JsonApiBuilder {
             additionalIncludeds: [],
         };
         if (Array.isArray(data)) {
-            const serialisedResults = data.map((item) => this.serialiseData(item, builder));
+            let serialisedResults;
+            if (builder instanceof JsonApiRelationshipBuilder_1.JsonApiRelationshipBuilder) {
+                serialisedResults = data.map((item) => {
+                    return {
+                        type: builder.type,
+                        id: (0, index_1.bufferToUuid)(item[builder.id]),
+                    };
+                });
+            }
+            else {
+                serialisedResults = data.map((item) => this.serialiseData(item, builder));
+            }
             const serialisedData = serialisedResults.map((result) => result.serialisedData);
             const includedElements = [].concat(...serialisedResults.map((result) => result.includedElements));
             response.minimalData = serialisedData.map((result) => {
@@ -195,17 +207,25 @@ class JsonApiBuilder {
             response.additionalIncludeds = [].concat(...includedElements).concat(serialisedData);
         }
         else {
-            const { serialisedData, includedElements } = this.serialiseData(data, builder);
-            response.minimalData = {
-                type: serialisedData.type,
-                id: serialisedData.id,
-            };
-            if (serialisedData.links) {
-                response.relationshipLink = {
-                    self: serialisedData.links.self,
+            if (builder instanceof JsonApiRelationshipBuilder_1.JsonApiRelationshipBuilder) {
+                response.minimalData = {
+                    type: builder.type,
+                    id: (0, index_1.bufferToUuid)(data[builder.id]),
                 };
             }
-            response.additionalIncludeds = [...includedElements, serialisedData];
+            else {
+                const { serialisedData, includedElements } = this.serialiseData(data, builder);
+                response.minimalData = {
+                    type: serialisedData.type,
+                    id: serialisedData.id,
+                };
+                if (serialisedData.links) {
+                    response.relationshipLink = {
+                        self: serialisedData.links.self,
+                    };
+                }
+                response.additionalIncludeds = [...includedElements, serialisedData];
+            }
         }
         return response;
     }
