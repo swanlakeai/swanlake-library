@@ -83,7 +83,8 @@ export class JsonApiBuilder {
 		};
 
 		if (url) {
-			response.links.self = url;
+			response.links = {};
+			response.links.self = (process?.env?.URL ?? "") + url;
 
 			if (pagination && Array.isArray(data)) {
 				pagination = this.updatePagination(pagination, data, idName);
