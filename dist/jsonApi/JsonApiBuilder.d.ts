@@ -13,11 +13,11 @@ export interface JsonApiCursorInterface {
 export declare class JsonApiBuilder {
     private _configureRelationships;
     private _paginationCount;
-    constructor(_configureRelationships: configureRelationshipsFunction);
-    generatePagination(query: any): JsonApiPaginationInterface | undefined;
-    generateCursor(pagination?: JsonApiPaginationInterface): JsonApiCursorInterface;
+    private _pagination;
+    constructor(_configureRelationships: configureRelationshipsFunction, query?: any);
+    generateCursor(): JsonApiCursorInterface;
     private updatePagination;
-    serialise<T, R extends JsonApiDataInterface>(data: T | T[], builder: R, url?: string, idName?: string, pagination?: JsonApiPaginationInterface): any;
+    serialise<T, R extends JsonApiDataInterface>(data: T | T[], builder: R, url?: string, idName?: string): any;
     private serialiseData;
     private serialiseRelationship;
 }

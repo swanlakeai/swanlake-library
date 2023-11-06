@@ -3,60 +3,54 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.JsonApiBuilder = void 0;
 const index_1 = require("../index");
 class JsonApiBuilder {
-    constructor(_configureRelationships) {
+    constructor(_configureRelationships, query) {
         this._configureRelationships = _configureRelationships;
         this._paginationCount = 25;
+        this._pagination = {};
+        if (query?.["page[size]"])
+            this._pagination.size = +query["page[size]"];
+        if (query?.["page[before]"])
+            this._pagination.before = query["page[before]"];
+        if (query?.["page[after]"])
+            this._pagination.after = query["page[after]"];
     }
-    generatePagination(query) {
-        const response = {};
-        if (query.page["size"])
-            response.size = query.page["size"];
-        if (query.page["before"])
-            response.before = query.page["before"];
-        if (query.page["after"])
-            response.after = query.page["after"];
-        return response;
-    }
-    generateCursor(pagination) {
+    generateCursor() {
         const cursor = {
             cursor: undefined,
             take: this._paginationCount + 1,
         };
-        if (!pagination)
-            return cursor;
-        if (pagination.size) {
-            cursor.take = pagination.size;
+        if (this._pagination.size) {
+            cursor.take = this._pagination.size;
         }
-        if (pagination.before) {
-            cursor.cursor = pagination.before;
-            cursor.take = -((pagination.size ?? this._paginationCount) + 1);
+        if (this._pagination.before) {
+            cursor.cursor = this._pagination.before;
+            cursor.take = -((this._pagination.size ?? this._paginationCount) + 1);
         }
-        else if (pagination.after) {
-            cursor.cursor = pagination.after;
-            cursor.take = (pagination.size ?? this._paginationCount) + 1;
+        else if (this._pagination.after) {
+            cursor.cursor = this._pagination.after;
+            cursor.take = (this._pagination.size ?? this._paginationCount) + 1;
         }
         return cursor;
     }
-    updatePagination(pagination, data, idName) {
-        if (!pagination.idName)
-            pagination.idName = idName ?? "id";
-        const hasEnoughData = data.length === (pagination?.size ? pagination.size + 1 : this._paginationCount + 1);
-        if (!pagination.before && !pagination.after && hasEnoughData) {
-            pagination.after = (0, index_1.bufferToUuid)(data[data.length - 1][pagination.idName]);
-            return pagination;
+    updatePagination(data, idName) {
+        if (!this._pagination.idName)
+            this._pagination.idName = idName ?? "id";
+        const hasEnoughData = data.length === (this._pagination?.size ? this._pagination.size + 1 : this._paginationCount + 1);
+        if (!this._pagination.before && !this._pagination.after && hasEnoughData) {
+            this._pagination.after = (0, index_1.bufferToUuid)(data[data.length - 1][this._pagination.idName]);
+            return;
         }
-        if (pagination.before) {
-            pagination.after = pagination.before;
+        if (this._pagination.before) {
+            this._pagination.after = this._pagination.before;
             if (hasEnoughData)
-                pagination.before = (0, index_1.bufferToUuid)(data[0][pagination.idName]);
-            return pagination;
+                this._pagination.before = (0, index_1.bufferToUuid)(data[0][this._pagination.idName]);
+            return;
         }
-        pagination.before = pagination.after;
+        this._pagination.before = this._pagination.after;
         if (hasEnoughData)
-            pagination.after = (0, index_1.bufferToUuid)(data[data.length - 1][pagination.idName]);
-        return pagination;
+            this._pagination.after = (0, index_1.bufferToUuid)(data[data.length - 1][this._pagination.idName]);
     }
-    serialise(data, builder, url, idName, pagination) {
+    serialise(data, builder, url, idName) {
         this._configureRelationships();
         const response = {
             links: {
@@ -65,30 +59,30 @@ class JsonApiBuilder {
             data: undefined,
         };
         if (url) {
-            if (Array.isArray(data) && !pagination)
-                pagination = {
+            if (Array.isArray(data) && !this._pagination)
+                this._pagination = {
                     size: this._paginationCount,
                 };
-            if (pagination && Array.isArray(data)) {
-                pagination = this.updatePagination(pagination, data, idName);
-                if (!pagination.size)
-                    pagination.size = this._paginationCount;
-                if (data.length === (pagination?.size ?? this._paginationCount + 1)) {
+            if (this._pagination && Array.isArray(data)) {
+                this.updatePagination(data, idName);
+                if (!this._pagination.size)
+                    this._pagination.size = this._paginationCount;
+                if (data.length === (this._pagination?.size ?? this._paginationCount + 1)) {
                     response.links.self =
-                        url + (url.indexOf("?") === -1 ? "?" : "&") + `page[size]=${pagination.size.toString()}`;
-                    if (pagination.after) {
+                        url + (url.indexOf("?") === -1 ? "?" : "&") + `page[size]=${this._pagination.size.toString()}`;
+                    if (this._pagination.after) {
                         response.links.next =
                             url +
                                 (url.indexOf("?") === -1 ? "?" : "&") +
-                                `page[size]=${pagination.size.toString()}&page[after]=${pagination.after}`;
+                                `page[size]=${this._pagination.size.toString()}&page[after]=${this._pagination.after}`;
                     }
-                    if (pagination.before) {
-                        response.links.prev =
-                            url +
-                                (url.indexOf("?") === -1 ? "?" : "&") +
-                                `page[size]=${pagination.size.toString()}&page[before]=${pagination.before}`;
-                    }
-                    data.splice(pagination.size, 1);
+                    data.splice(this._pagination.size, 1);
+                }
+                if (this._pagination.before) {
+                    response.links.prev =
+                        url +
+                            (url.indexOf("?") === -1 ? "?" : "&") +
+                            `page[size]=${this._pagination.size.toString()}&page[before]=${this._pagination.before}`;
                 }
             }
         }
