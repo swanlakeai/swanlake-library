@@ -149,17 +149,17 @@ class JsonApiBuilder {
                 let resourceLinkage = {};
                 if (relationship[1].resourceIdentifier || data[relationship[0]]) {
                     if (relationship[1].resourceIdentifier) {
-                        const data = {
+                        const minimalData = {
                             type: relationship[1].resourceIdentifier.type,
                         };
                         if (typeof relationship[1].resourceIdentifier.id === "function") {
-                            data.id = relationship[1].resourceIdentifier.id(data);
+                            minimalData.id = relationship[1].resourceIdentifier.id(data);
                         }
                         else {
-                            data.id = data[relationship[1].resourceIdentifier.id];
+                            minimalData.id = data[relationship[1].resourceIdentifier.id];
                         }
                         resourceLinkage = {
-                            data: data,
+                            data: minimalData,
                         };
                         if (relationship[1].links) {
                             resourceLinkage.links = {
