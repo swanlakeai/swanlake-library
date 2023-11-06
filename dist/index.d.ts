@@ -8,5 +8,6 @@ export { JwtStrategy } from "./auth/jwt.strategy";
 export { OptionalJwtAuthGuard } from "./auth/optional-jwt-auth.guard";
 export { JsonApiBuilder, configureRelationshipsFunction } from "./jsonApi/JsonApiBuilder";
 export { JsonApiDataInterface, transformFunction } from "./jsonApi/interfaces/JsonApiDataInterface";
+export { Router } from "./routing/Router";
 export declare function uuidToBuffer(uuid: string): Buffer;
 export declare function bufferToUuid(buffer: Buffer): string;
