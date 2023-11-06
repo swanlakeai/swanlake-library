@@ -192,12 +192,12 @@ export class JsonApiBuilder {
 			Object.entries(builder.relationships).forEach((relationship) => {
 				let resourceLinkage: any = {};
 
-				if (relationship[1].resourceIdentifier || data[relationship[0]]) {
-					if (relationship[1].resourceIdentifier) {
-						const minimalData: any = {
-							type: relationship[1].resourceIdentifier.type,
-						};
+				if (relationship[1].resourceIdentifier) {
+					const minimalData: any = {
+						type: relationship[1].resourceIdentifier.type,
+					};
 
+					try {
 						if (typeof relationship[1].resourceIdentifier.id === "function") {
 							minimalData.id = relationship[1].resourceIdentifier.id(data);
 						} else {
@@ -212,26 +212,27 @@ export class JsonApiBuilder {
 								related: relationship[1].links.related(data),
 							};
 						}
-					} else if (data[relationship[0]]) {
-						const { minimalData, relationshipLink, additionalIncludeds } = this.serialiseRelationship(
-							data[relationship[0]],
-							relationship[1].data
-						);
 
-						resourceLinkage = {
-							data: minimalData,
+						serialisedData.relationships[relationship[1].name ?? relationship[0]] = resourceLinkage;
+					} catch (e) {}
+				} else if (data[relationship[0]]) {
+					const { minimalData, relationshipLink, additionalIncludeds } = this.serialiseRelationship(
+						data[relationship[0]],
+						relationship[1].data
+					);
+
+					resourceLinkage = {
+						data: minimalData,
+					};
+
+					if (relationshipLink) {
+						resourceLinkage.links = relationshipLink;
+					} else if (relationship[1].links) {
+						resourceLinkage.links = {
+							related: relationship[1].links.related(data),
 						};
-
-						if (relationshipLink) {
-							resourceLinkage.links = relationshipLink;
-						} else if (relationship[1].links) {
-							resourceLinkage.links = {
-								related: relationship[1].links.related(data),
-							};
-						}
-						if (relationship[1].included && additionalIncludeds.length > 0)
-							includedElements.push(...additionalIncludeds);
 					}
+					if (relationship[1].included && additionalIncludeds.length > 0) includedElements.push(...additionalIncludeds);
 					serialisedData.relationships[relationship[1].name ?? relationship[0]] = resourceLinkage;
 				}
 			});
