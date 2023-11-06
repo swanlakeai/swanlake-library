@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.JsonApiBuilder = void 0;
-const src_1 = require("src");
+const index_1 = require("../index");
 class JsonApiBuilder {
     constructor(_configureRelationships) {
         this._configureRelationships = _configureRelationships;
@@ -31,19 +31,19 @@ class JsonApiBuilder {
             pagination.idName = idName ?? "id";
         const hasEnoughData = data.length === (pagination?.size ? pagination.size + 1 : exports.DEFAULT_PAGINATION_COUNT + 1);
         if (!pagination.before && !pagination.after && hasEnoughData) {
-            pagination.after = (0, src_1.bufferToUuid)(data[data.length - 1][pagination.idName]);
-            pagination.before = (0, src_1.bufferToUuid)(data[data.length - 1][pagination.idName]);
+            pagination.after = (0, index_1.bufferToUuid)(data[data.length - 1][pagination.idName]);
+            pagination.before = (0, index_1.bufferToUuid)(data[data.length - 1][pagination.idName]);
             return pagination;
         }
         if (pagination.before) {
             pagination.after = pagination.before;
             if (hasEnoughData)
-                pagination.before = (0, src_1.bufferToUuid)(data[0][pagination.idName]);
+                pagination.before = (0, index_1.bufferToUuid)(data[0][pagination.idName]);
             return pagination;
         }
         pagination.before = pagination.after;
         if (hasEnoughData)
-            pagination.after = (0, src_1.bufferToUuid)(data[data.length - 1][pagination.idName]);
+            pagination.after = (0, index_1.bufferToUuid)(data[data.length - 1][pagination.idName]);
         return pagination;
     }
     serialise(data, builder, url, idName, pagination) {

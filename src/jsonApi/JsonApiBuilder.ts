@@ -1,4 +1,4 @@
-import { bufferToUuid } from "src";
+import { bufferToUuid } from "../index";
 import { JsonApiDataInterface } from "./interfaces/JsonApiDataInterface";
 
 export type configureRelationshipsFunction = () => void;
