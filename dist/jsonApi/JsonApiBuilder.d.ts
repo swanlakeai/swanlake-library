@@ -15,7 +15,7 @@ export declare class JsonApiBuilder {
     constructor(_configureRelationships: configureRelationshipsFunction);
     generateCursor(pagination?: JsonApiPaginationInterface): JsonApiCursorInterface;
     private updatePagination;
-    serialise<T, R extends JsonApiDataInterface>(data: T | T[], builder: R, url: string, idName?: string, pagination?: JsonApiPaginationInterface): any;
+    serialise<T, R extends JsonApiDataInterface>(data: T | T[], builder: R, url?: string, idName?: string, pagination?: JsonApiPaginationInterface): any;
     private serialiseData;
     private serialiseRelationship;
 }

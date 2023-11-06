@@ -49,29 +49,30 @@ class JsonApiBuilder {
         this._configureRelationships();
         const response = {
             data: undefined,
-            links: {
-                self: url,
-            },
         };
-        if (pagination && Array.isArray(data)) {
-            pagination = this.updatePagination(pagination, data, idName);
-            if (!pagination.size)
-                pagination.size = DEFAULT_PAGINATION_COUNT;
-            if (data.length === (pagination?.size ?? DEFAULT_PAGINATION_COUNT + 1)) {
-                response.links.self = url + (url.indexOf("?") === -1 ? "?" : "&") + `page[size]=${pagination.size.toString()}`;
-                if (pagination.after) {
-                    response.links.next =
-                        url +
-                            (url.indexOf("?") === -1 ? "?" : "&") +
-                            `page[size]=${pagination.size.toString()}&page[after]=${pagination.after}`;
+        if (url) {
+            response.links.self = url;
+            if (pagination && Array.isArray(data)) {
+                pagination = this.updatePagination(pagination, data, idName);
+                if (!pagination.size)
+                    pagination.size = DEFAULT_PAGINATION_COUNT;
+                if (data.length === (pagination?.size ?? DEFAULT_PAGINATION_COUNT + 1)) {
+                    response.links.self =
+                        url + (url.indexOf("?") === -1 ? "?" : "&") + `page[size]=${pagination.size.toString()}`;
+                    if (pagination.after) {
+                        response.links.next =
+                            url +
+                                (url.indexOf("?") === -1 ? "?" : "&") +
+                                `page[size]=${pagination.size.toString()}&page[after]=${pagination.after}`;
+                    }
+                    if (pagination.before) {
+                        response.links.prev =
+                            url +
+                                (url.indexOf("?") === -1 ? "?" : "&") +
+                                `page[size]=${pagination.size.toString()}&page[before]=${pagination.before}`;
+                    }
+                    data.splice(pagination.size, 1);
                 }
-                if (pagination.before) {
-                    response.links.prev =
-                        url +
-                            (url.indexOf("?") === -1 ? "?" : "&") +
-                            `page[size]=${pagination.size.toString()}&page[before]=${pagination.before}`;
-                }
-                data.splice(pagination.size, 1);
             }
         }
         let included = [];

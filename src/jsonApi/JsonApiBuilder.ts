@@ -72,7 +72,7 @@ export class JsonApiBuilder {
 	serialise<T, R extends JsonApiDataInterface>(
 		data: T | T[],
 		builder: R,
-		url: string,
+		url?: string,
 		idName?: string,
 		pagination?: JsonApiPaginationInterface
 	): any {
@@ -80,34 +80,36 @@ export class JsonApiBuilder {
 
 		const response: any = {
 			data: undefined,
-			links: {
-				self: url,
-			},
 		};
 
-		if (pagination && Array.isArray(data)) {
-			pagination = this.updatePagination(pagination, data, idName);
+		if (url) {
+			response.links.self = url;
 
-			if (!pagination.size) pagination.size = DEFAULT_PAGINATION_COUNT;
+			if (pagination && Array.isArray(data)) {
+				pagination = this.updatePagination(pagination, data, idName);
 
-			if (data.length === (pagination?.size ?? DEFAULT_PAGINATION_COUNT + 1)) {
-				response.links.self = url + (url.indexOf("?") === -1 ? "?" : "&") + `page[size]=${pagination.size.toString()}`;
+				if (!pagination.size) pagination.size = DEFAULT_PAGINATION_COUNT;
 
-				if (pagination.after) {
-					response.links.next =
-						url +
-						(url.indexOf("?") === -1 ? "?" : "&") +
-						`page[size]=${pagination.size.toString()}&page[after]=${pagination.after}`;
+				if (data.length === (pagination?.size ?? DEFAULT_PAGINATION_COUNT + 1)) {
+					response.links.self =
+						url + (url.indexOf("?") === -1 ? "?" : "&") + `page[size]=${pagination.size.toString()}`;
+
+					if (pagination.after) {
+						response.links.next =
+							url +
+							(url.indexOf("?") === -1 ? "?" : "&") +
+							`page[size]=${pagination.size.toString()}&page[after]=${pagination.after}`;
+					}
+
+					if (pagination.before) {
+						response.links.prev =
+							url +
+							(url.indexOf("?") === -1 ? "?" : "&") +
+							`page[size]=${pagination.size.toString()}&page[before]=${pagination.before}`;
+					}
+
+					data.splice(pagination.size, 1);
 				}
-
-				if (pagination.before) {
-					response.links.prev =
-						url +
-						(url.indexOf("?") === -1 ? "?" : "&") +
-						`page[size]=${pagination.size.toString()}&page[before]=${pagination.before}`;
-				}
-
-				data.splice(pagination.size, 1);
 			}
 		}
 
