@@ -1,5 +1,5 @@
 import { JsonApiDataInterface } from "./interfaces/JsonApiDataInterface";
-export type configureRelationshipsFunction = () => void;
+export type configureRelationshipsFunction = (config?: any) => void;
 export interface JsonApiPaginationInterface {
     size?: number;
     before?: string;
