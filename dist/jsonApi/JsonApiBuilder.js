@@ -187,6 +187,12 @@ class JsonApiBuilder {
                         includedElements.push(...additionalIncludeds);
                     serialisedData.relationships[relationship[1].name ?? relationship[0]] = resourceLinkage;
                 }
+                else if (relationship[1].links) {
+                    resourceLinkage.links = {
+                        related: relationship[1].links.related(data),
+                    };
+                    serialisedData.relationships[relationship[1].name ?? relationship[0]] = resourceLinkage;
+                }
             });
             if (Object.keys(serialisedData.relationships).length === 0)
                 delete serialisedData.relationships;
