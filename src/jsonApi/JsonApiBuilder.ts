@@ -235,10 +235,14 @@ export class JsonApiBuilder {
 					if (relationship[1].included && additionalIncludeds.length > 0) includedElements.push(...additionalIncludeds);
 					serialisedData.relationships[relationship[1].name ?? relationship[0]] = resourceLinkage;
 				} else if (relationship[1].links) {
-					resourceLinkage.links = {
-						related: relationship[1].links.related(data),
-					};
-					serialisedData.relationships[relationship[1].name ?? relationship[0]] = resourceLinkage;
+					const related = relationship[1].links.related(data);
+
+					if (related) {
+						resourceLinkage.links = {
+							related: related,
+						};
+						serialisedData.relationships[relationship[1].name ?? relationship[0]] = resourceLinkage;
+					}
 				}
 			});
 

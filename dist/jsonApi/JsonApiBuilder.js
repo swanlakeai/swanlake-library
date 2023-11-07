@@ -188,10 +188,13 @@ class JsonApiBuilder {
                     serialisedData.relationships[relationship[1].name ?? relationship[0]] = resourceLinkage;
                 }
                 else if (relationship[1].links) {
-                    resourceLinkage.links = {
-                        related: relationship[1].links.related(data),
-                    };
-                    serialisedData.relationships[relationship[1].name ?? relationship[0]] = resourceLinkage;
+                    const related = relationship[1].links.related(data);
+                    if (related) {
+                        resourceLinkage.links = {
+                            related: related,
+                        };
+                        serialisedData.relationships[relationship[1].name ?? relationship[0]] = resourceLinkage;
+                    }
                 }
             });
             if (Object.keys(serialisedData.relationships).length === 0)
