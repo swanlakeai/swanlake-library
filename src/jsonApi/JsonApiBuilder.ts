@@ -1,8 +1,6 @@
 import { bufferToUuid } from "../index";
 import { JsonApiDataInterface } from "./interfaces/JsonApiDataInterface";
 
-export type configureRelationshipsFunction = (config?: any) => void;
-
 export interface JsonApiPaginationInterface {
 	size?: number;
 	before?: string;
@@ -24,10 +22,7 @@ export class JsonApiBuilder {
 	private _paginationCount = 25;
 	private _pagination: JsonApiPaginationInterface = {};
 
-	constructor(
-		private _configureRelationships: configureRelationshipsFunction,
-		query?: any
-	) {
+	constructor(query?: any) {
 		if (query?.["page[size]"]) this._pagination.size = +query["page[size]"];
 		if (query?.["page[before]"]) this._pagination.before = query["page[before]"];
 		if (query?.["page[after]"]) this._pagination.after = query["page[after]"];
@@ -75,8 +70,6 @@ export class JsonApiBuilder {
 	}
 
 	serialise<T, R extends JsonApiDataInterface>(data: T | T[], builder: R, url?: string, idName?: string): any {
-		this._configureRelationships();
-
 		const response: any = {
 			links: {
 				self: url,

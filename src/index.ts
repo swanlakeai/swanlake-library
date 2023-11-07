@@ -13,7 +13,7 @@ export { AuthModule } from "./auth/auth.module";
 export { JwtAuthGuard } from "./auth/jwt-auth.guard";
 export { JwtStrategy } from "./auth/jwt.strategy";
 export { OptionalJwtAuthGuard } from "./auth/optional-jwt-auth.guard";
-export { JsonApiBuilder, configureRelationshipsFunction } from "./jsonApi/JsonApiBuilder";
+export { JsonApiBuilder } from "./jsonApi/JsonApiBuilder";
 export { JsonApiDataInterface, transformFunction } from "./jsonApi/interfaces/JsonApiDataInterface";
 export { Router } from "./routing/Router";
 

@@ -3,8 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.JsonApiBuilder = void 0;
 const index_1 = require("../index");
 class JsonApiBuilder {
-    constructor(_configureRelationships, query) {
-        this._configureRelationships = _configureRelationships;
+    constructor(query) {
         this._paginationCount = 25;
         this._pagination = {};
         if (query?.["page[size]"])
@@ -51,7 +50,6 @@ class JsonApiBuilder {
             this._pagination.after = (0, index_1.bufferToUuid)(data[data.length - 1][this._pagination.idName]);
     }
     serialise(data, builder, url, idName) {
-        this._configureRelationships();
         const response = {
             links: {
                 self: url,

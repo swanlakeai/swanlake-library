@@ -1,5 +1,4 @@
 import { JsonApiDataInterface } from "./interfaces/JsonApiDataInterface";
-export type configureRelationshipsFunction = (config?: any) => void;
 export interface JsonApiPaginationInterface {
     size?: number;
     before?: string;
@@ -15,10 +14,9 @@ export interface JsonApiRelationshipBuilderInterface {
     id: string;
 }
 export declare class JsonApiBuilder {
-    private _configureRelationships;
     private _paginationCount;
     private _pagination;
-    constructor(_configureRelationships: configureRelationshipsFunction, query?: any);
+    constructor(query?: any);
     private get size();
     generateCursor(): JsonApiCursorInterface;
     private updatePagination;
