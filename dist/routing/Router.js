@@ -15,6 +15,8 @@ class Router {
     }
     static getUrl(microservice) {
         const url = process.env.API_URL;
+        if (!microservice)
+            return url;
         const versions = this._microservices();
         return `${url}v${versions.get(microservice)}/`;
     }

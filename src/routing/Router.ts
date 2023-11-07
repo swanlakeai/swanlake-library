@@ -14,10 +14,11 @@ export class Router {
 		return result;
 	}
 
-	static getUrl(microservice: string) {
+	static getUrl(microservice?: string) {
 		const url: string = process.env.API_URL;
-		const versions: Map<string, string> = this._microservices();
+		if (!microservice) return url;
 
+		const versions: Map<string, string> = this._microservices();
 		return `${url}v${versions.get(microservice)}/`;
 	}
 }
