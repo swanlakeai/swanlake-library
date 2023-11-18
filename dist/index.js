@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.bufferToUuid = exports.uuidToBuffer = exports.Router = exports.JsonApiBuilder = exports.OptionalJwtAuthGuard = exports.JwtStrategy = exports.JwtAuthGuard = exports.AuthModule = exports.topLevelLinks = exports.prepareData = exports.SwanlakePrisma = exports.DEFAULT_PAGINATION_COUNT = exports.JsonApiNavigator = exports.Imgix = void 0;
+exports.ApiDataFactory = exports.AbstractApiData = exports.bufferToUuid = exports.uuidToBuffer = exports.Router = exports.JsonApiBuilder = exports.OptionalJwtAuthGuard = exports.JwtStrategy = exports.JwtAuthGuard = exports.AuthModule = exports.topLevelLinks = exports.prepareData = exports.SwanlakePrisma = exports.DEFAULT_PAGINATION_COUNT = exports.JsonApiNavigator = exports.Imgix = void 0;
 var Imgix_1 = require("./imgix/Imgix");
 Object.defineProperty(exports, "Imgix", { enumerable: true, get: function () { return Imgix_1.Imgix; } });
 var JsonApiNavigator_1 = require("./jsonApi/JsonApiNavigator");
@@ -39,4 +39,8 @@ function bufferToUuid(buffer) {
     return uuid;
 }
 exports.bufferToUuid = bufferToUuid;
+var AbstractApiData_1 = require("./jsonApi/abstracts/AbstractApiData");
+Object.defineProperty(exports, "AbstractApiData", { enumerable: true, get: function () { return AbstractApiData_1.AbstractApiData; } });
+var ApiDataFactory_1 = require("./jsonApi/factories/ApiDataFactory");
+Object.defineProperty(exports, "ApiDataFactory", { enumerable: true, get: function () { return ApiDataFactory_1.ApiDataFactory; } });
 //# sourceMappingURL=index.js.map

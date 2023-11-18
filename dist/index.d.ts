@@ -11,3 +11,8 @@ export { JsonApiDataInterface, transformFunction } from "./jsonApi/interfaces/Js
 export { Router } from "./routing/Router";
 export declare function uuidToBuffer(uuid: string): Buffer;
 export declare function bufferToUuid(buffer: Buffer): string;
+export { AbstractApiData } from "./jsonApi/abstracts/AbstractApiData";
+export { ApiDataFactory } from "./jsonApi/factories/ApiDataFactory";
+export { ApiDataInterface } from "./jsonApi/interfaces/ApiDataInterface";
+export { ApiResponseInterface } from "./jsonApi/interfaces/ApiResponseInterface";
+export { JsonApiHydratedDataInterface } from "./jsonApi/interfaces/JsonApiHydratedDataInterface";
