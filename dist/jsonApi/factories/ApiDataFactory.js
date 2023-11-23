@@ -117,6 +117,9 @@ class ApiDataFactory {
             body = {};
         return this._request("POST", factory, params, body);
     }
+    static async put(factory, params, body) {
+        return this._request("PUT", factory, params, body);
+    }
     static async patch(factory, params, body) {
         return this._request("PATCH", factory, params, body);
     }

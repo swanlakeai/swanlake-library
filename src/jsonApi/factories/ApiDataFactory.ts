@@ -117,6 +117,14 @@ export class ApiDataFactory {
 		return this._request("POST", factory, params, body);
 	}
 
+	public static async put<T extends ApiDataInterface>(
+		factory: () => T,
+		params?: any,
+		body?: any
+	): Promise<ApiResponseInterface> {
+		return this._request("PUT", factory, params, body);
+	}
+
 	public static async patch<T extends ApiDataInterface>(
 		factory: () => T,
 		params?: any,
